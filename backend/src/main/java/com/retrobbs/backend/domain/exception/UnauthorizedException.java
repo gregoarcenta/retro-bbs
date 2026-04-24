@@ -1,0 +1,9 @@
+package com.retrobbs.backend.domain.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class UnauthorizedException extends AppException {
+    public UnauthorizedException(String message) {
+        super("UNAUTHORIZED", message, HttpStatus.UNAUTHORIZED);
+    }
+}
