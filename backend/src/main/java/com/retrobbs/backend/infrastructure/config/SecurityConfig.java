@@ -6,6 +6,7 @@ import com.retrobbs.backend.infrastructure.security.JwtAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -38,11 +39,10 @@ public class SecurityConfig {
                         .authenticationEntryPoint(authenticationEntryPoint) // 401
                         .accessDeniedHandler(accessDeniedHandler)           // 403
                 )
-                .authorizeHttpRequests(auth -> auth.requestMatchers("/api/auth/**")
-                        .permitAll()
-                        .requestMatchers("/api/topicos")
-                        .permitAll()
-//                        .requestMatchers("/api/ranking/**").permitAll()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/topicos", "/api/topicos/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/ranking").permitAll()
                         .anyRequest()
                         .authenticated())
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
