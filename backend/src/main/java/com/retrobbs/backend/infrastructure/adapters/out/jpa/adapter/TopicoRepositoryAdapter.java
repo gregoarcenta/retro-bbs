@@ -2,6 +2,7 @@ package com.retrobbs.backend.infrastructure.adapters.out.jpa.adapter;
 
 import com.retrobbs.backend.domain.model.TopicoResult;
 import com.retrobbs.backend.domain.model.enums.EstadoTopico;
+import com.retrobbs.backend.domain.model.enums.TipoVoto;
 import com.retrobbs.backend.domain.ports.out.TopicoRepository;
 import com.retrobbs.backend.infrastructure.adapters.out.jpa.entity.CategoriaEntity;
 import com.retrobbs.backend.infrastructure.adapters.out.jpa.entity.TopicoEntity;
@@ -78,11 +79,17 @@ public class TopicoRepositoryAdapter implements TopicoRepository {
         topicoJpaRepository.save(entity);
     }
 
+    @Override
+    public boolean esAutorDelTopico(Long topicoId, String username) {
+        return topicoJpaRepository.findById(topicoId)
+                .map(t -> t.getAuthor().getUsername().equals(username))
+                .orElse(false);
+    }
+
     private TopicoResult toResult(TopicoEntity t) {
         int totalVotos = t.getVotos() == null ? 0 :
                 t.getVotos().stream()
-                .mapToInt(v -> v.getType() ==
-                               com.retrobbs.backend.domain.model.enums.TipoVoto.UP ? 1 : -1)
+                .mapToInt(v -> v.getType() == TipoVoto.UP ? 1 : -1)
                 .sum();
 
         return TopicoResult.builder()

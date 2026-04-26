@@ -20,4 +20,6 @@ public interface TopicoRepository {
     TopicoResult actualizar(Long id, String title, String content);
 
     void cambiarEstado(Long id, EstadoTopico estado);
+
+    boolean esAutorDelTopico(Long topicoId, String username);
 }

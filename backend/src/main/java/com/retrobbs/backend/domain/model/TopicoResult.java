@@ -17,6 +17,23 @@ public class TopicoResult {
     private String categoriaNombre;
     private int totalRespuestas;
     private int totalVotos;
+    private String miVoto;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+
+    public TopicoResult conMiVoto(String miVoto) {
+        return TopicoResult.builder()
+                .id(this.id)
+                .title(this.title)
+                .content(this.content)
+                .status(this.status)
+                .authorUsername(this.authorUsername)
+                .categoriaNombre(this.categoriaNombre)
+                .totalRespuestas(this.totalRespuestas)
+                .totalVotos(this.totalVotos)
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
+                .miVoto(miVoto)
+                .build();
+    }
 }

@@ -6,6 +6,7 @@ import com.retrobbs.backend.domain.model.TopicoResult;
 import com.retrobbs.backend.domain.model.enums.EstadoTopico;
 import com.retrobbs.backend.domain.ports.in.TopicoUseCase;
 import com.retrobbs.backend.domain.ports.out.TopicoRepository;
+import com.retrobbs.backend.domain.ports.out.VotoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ public class TopicoService implements TopicoUseCase {
 
     private final TopicoRepository topicoRepository;
     private final RankingService rankingService;
+    private final VotoRepository votoRepository;
 
     @Override
     @Transactional
@@ -33,9 +35,17 @@ public class TopicoService implements TopicoUseCase {
 
     @Override
     @Transactional(readOnly = true)
-    public TopicoResult obtenerPorId(Long id) {
-        return topicoRepository.buscarPorId(id)
+    public TopicoResult obtenerPorId(Long id, String username) {
+        TopicoResult topico = topicoRepository.buscarPorId(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Topico", id));
+
+        if (username != null) {
+            String miVoto = votoRepository
+                    .obtenerVotoDelUsuario(id, username, "TOPICO");
+            return topico.conMiVoto(miVoto);
+        }
+
+        return topico;
     }
 
     @Override

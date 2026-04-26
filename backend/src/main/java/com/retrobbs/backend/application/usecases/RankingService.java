@@ -7,6 +7,7 @@ import com.retrobbs.backend.domain.ports.out.RankingStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -29,6 +30,16 @@ public class RankingService implements RankingUseCase {
     @Override
     public List<RankingResult> obtenerTop10() {
         return rankingStore.obtenerTop10();
+    }
+
+    @Override
+    public List<RankingResult> obtenerTop10DelMes(LocalDate mes) {
+        // No permitir consultar más de 12 meses atrás
+        LocalDate limiteConsulta = LocalDate.now().minusMonths(12);
+        if (mes.isBefore(limiteConsulta)) {
+            mes = limiteConsulta;
+        }
+        return rankingStore.obtenerTop10DelMes(mes);
     }
 
     @Override

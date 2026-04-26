@@ -17,6 +17,7 @@ public class TopicoResponse {
     private String categoriaNombre;
     private int totalRespuestas;
     private int totalVotos;
+    private String miVoto;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

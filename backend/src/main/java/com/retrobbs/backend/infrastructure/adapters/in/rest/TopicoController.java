@@ -29,11 +29,10 @@ public class TopicoController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        TopicoResult result = topicoUseCase.crear(
-                request.getTitle(),
-                request.getContent(),
-                request.getCategoriaId(),
-                userDetails.getUsername()
+        TopicoResult result = topicoUseCase.crear(request.getTitle(),
+                                                  request.getContent(),
+                                                  request.getCategoriaId(),
+                                                  userDetails.getUsername()
         );
 
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -47,18 +46,22 @@ public class TopicoController {
             @RequestParam(defaultValue = "10") int size
     ) {
 
-        Page<TopicoResponse> response = topicoUseCase
-                .listar(categoriaId, PageRequest.of(page, size))
+        Page<TopicoResponse> response = topicoUseCase.listar(categoriaId, PageRequest.of(page, size))
                 .map(this::toResponse);
 
         return ResponseEntity.ok(ApiResponse.ok(response));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse<TopicoResponse>> obtener(@PathVariable Long id) {
-        return ResponseEntity.ok(
-                ApiResponse.ok(toResponse(topicoUseCase.obtenerPorId(id)))
-        );
+    public ResponseEntity<ApiResponse<TopicoResponse>> obtener(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String username = userDetails != null ? userDetails.getUsername() : null;
+
+        TopicoResult result = topicoUseCase.obtenerPorId(id, username);
+
+        return ResponseEntity.ok(ApiResponse.ok(toResponse(result)));
     }
 
     @PutMapping("/{id}")
@@ -68,11 +71,10 @@ public class TopicoController {
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
-        TopicoResult result = topicoUseCase.actualizar(
-                id,
-                request.getTitle(),
-                request.getContent(),
-                userDetails.getUsername()
+        TopicoResult result = topicoUseCase.actualizar(id,
+                                                       request.getTitle(),
+                                                       request.getContent(),
+                                                       userDetails.getUsername()
         );
 
         return ResponseEntity.ok(ApiResponse.ok("Tópico actualizado", toResponse(result)));
@@ -88,7 +90,6 @@ public class TopicoController {
         return ResponseEntity.ok(ApiResponse.ok("Tópico eliminado", null));
     }
 
-    // ─── Mapper: DomainResult → HTTP Response ────────────────────
     private TopicoResponse toResponse(TopicoResult result) {
         return TopicoResponse.builder()
                 .id(result.getId())
@@ -99,6 +100,7 @@ public class TopicoController {
                 .categoriaNombre(result.getCategoriaNombre())
                 .totalRespuestas(result.getTotalRespuestas())
                 .totalVotos(result.getTotalVotos())
+                .miVoto(result.getMiVoto())
                 .createdAt(result.getCreatedAt())
                 .updatedAt(result.getUpdatedAt())
                 .build();
